@@ -1,0 +1,26 @@
+application:
+  name: erpnext
+  pods:
+  - name: app
+    image: frappe/erpnext:latest
+    path: /
+    servicePorts:
+    - 8080
+    vars:
+      DB_HOST: mariadb.pod
+      DB_PORT: "3306"
+      DB_PASSWORD: erpnext123
+      ADMIN_PASSWORD: admin123
+  - name: mariadb
+    image: mariadb:10.6
+    servicePorts:
+    - 3306
+    vars:
+      MYSQL_ROOT_PASSWORD: erpnext123
+      MYSQL_DATABASE: erpnext
+      MYSQL_USER: erpnext
+      MYSQL_PASSWORD: erpnext123
+    volumes:
+    - name: erpnext-db
+      mountPath: /var/lib/mysql
+      size: 10Gi
