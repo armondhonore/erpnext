@@ -6,6 +6,7 @@ application:
     path: /
     servicePorts:
     - 8000
+    command: sh -c "cd /home/frappe/frappe-bench && SITE=relaxed-weasel-erpnext.cloud.nexlayer.ai && bench set-config -g db_host erpnext-mariadb-service && bench set-config -g db_port 3306 && bench set-config -g redis_cache redis://erpnext-redis-service:6379 && bench set-config -g redis_queue redis://erpnext-redis-service:6379 && bench set-config -g redis_socketio redis://erpnext-redis-service:6379 && until python3 -c 'import socket,sys; socket.create_connection((\"erpnext-mariadb-service\",3306),5)' 2>/dev/null; do echo waiting-for-mariadb; sleep 3; done && if [ ! -d sites/$SITE ]; then bench new-site $SITE --mariadb-root-password erpnext123 --admin-password admin123 --db-name erpnext_site --install-app erpnext --mariadb-user-host-login-scope=% ; fi && printf %s $SITE > sites/currentsite.txt && exec /home/frappe/frappe-bench/env/bin/gunicorn --chdir=/home/frappe/frappe-bench/sites --bind=0.0.0.0:8000 --threads=4 --workers=2 --worker-class=gthread --worker-tmp-dir=/dev/shm --timeout=120 frappe.app:application"
     vars:
       DB_HOST: erpnext-mariadb-service
       DB_PORT: "3306"
