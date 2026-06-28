@@ -5,12 +5,19 @@ application:
     image: frappe/erpnext:latest
     path: /
     servicePorts:
-    - 8080
+    - 8000
     vars:
-      DB_HOST: mariadb.pod
+      DB_HOST: erpnext-mariadb-service
       DB_PORT: "3306"
       DB_PASSWORD: erpnext123
       ADMIN_PASSWORD: admin123
+      REDIS_CACHE: erpnext-redis-service:6379
+      REDIS_QUEUE: erpnext-redis-service:6379
+      SOCKETIO_PORT: "9000"
+    volumes:
+    - name: erpnext-sites
+      mountPath: /home/frappe/frappe-bench/sites
+      size: 10Gi
   - name: mariadb
     image: mariadb:10.6
     servicePorts:
@@ -24,3 +31,7 @@ application:
     - name: erpnext-db
       mountPath: /var/lib/mysql
       size: 10Gi
+  - name: redis
+    image: redis:7-alpine
+    servicePorts:
+    - 6379
