@@ -14,10 +14,6 @@ application:
       REDIS_CACHE: erpnext-redis-service:6379
       REDIS_QUEUE: erpnext-redis-service:6379
       SOCKETIO_PORT: "9000"
-    volumes:
-    - name: erpnext-sites
-      mountPath: /home/frappe/frappe-bench/sites
-      size: 10Gi
   - name: mariadb
     image: mirror.gcr.io/library/mariadb:10.6
     servicePorts:
