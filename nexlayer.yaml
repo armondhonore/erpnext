@@ -2,15 +2,14 @@ application:
   name: erpnext
   pods:
   - name: app
-    image: mirror.gcr.io/frappe/erpnext:latest
+    image: mirror.gcr.io/frappe/erpnext:v15.114.0
     path: /
     servicePorts:
     - 8000
-    command: bash -c "cd /home/frappe/frappe-bench && SITE=relaxed-weasel-erpnext.cloud.nexlayer.ai && bench set-config -g db_host erpnext-mariadb-service && bench set-config -g db_port 3306 && bench set-config -g redis_cache redis://erpnext-redis-service:6379 && bench set-config -g redis_queue redis://erpnext-redis-service:6379 && bench set-config -g redis_socketio redis://erpnext-redis-service:6379 && until (exec 3<>/dev/tcp/erpnext-mariadb-service/3306) 2>/dev/null; do echo waiting-for-mariadb; sleep 3; done && if [ ! -d sites/$SITE ]; then bench new-site $SITE --force --mariadb-root-password erpnext123 --admin-password admin123 --db-name erpnext_site --db-password erpnextdbpass123 --install-app erpnext --mariadb-user-host-login-scope=% ; fi && printf %s $SITE > sites/currentsite.txt && exec /home/frappe/frappe-bench/env/bin/gunicorn --chdir=/home/frappe/frappe-bench/sites --bind=0.0.0.0:8000 --threads=4 --workers=2 --worker-class=gthread --worker-tmp-dir=/dev/shm --timeout=120 frappe.app:application"
+    command: bash -c "cd /home/frappe/frappe-bench && SITE=relaxed-weasel-erpnext.cloud.nexlayer.ai && bench set-config -g db_host erpnext-mariadb-service && bench set-config -g db_port 3306 && bench set-config -g redis_cache redis://erpnext-redis-service:6379 && bench set-config -g redis_queue redis://erpnext-redis-service:6379 && bench set-config -g redis_socketio redis://erpnext-redis-service:6379 && until (exec 3<>/dev/tcp/erpnext-mariadb-service/3306) 2>/dev/null; do echo waiting-for-mariadb; sleep 3; done && if [ ! -f sites/$SITE/site_config.json ]; then bench new-site $SITE --force --mariadb-root-password ${MARIADB_ROOT_PASSWORD} --admin-password admin123 --db-name erpnext_site --db-password erpnextdbpass123 --install-app erpnext --mariadb-user-host-login-scope=% ; fi && printf %s $SITE > sites/currentsite.txt && exec /home/frappe/frappe-bench/env/bin/gunicorn --chdir=/home/frappe/frappe-bench/sites --bind=0.0.0.0:8000 --preload --threads=4 --workers=2 --worker-class=gthread --worker-tmp-dir=/dev/shm --timeout=120 frappe.app:application"
     vars:
       DB_HOST: erpnext-mariadb-service
       DB_PORT: "3306"
-      DB_PASSWORD: erpnext123
       ADMIN_PASSWORD: admin123
       REDIS_CACHE: erpnext-redis-service:6379
       REDIS_QUEUE: erpnext-redis-service:6379
@@ -20,10 +19,10 @@ application:
     servicePorts:
     - 3306
     vars:
-      MYSQL_ROOT_PASSWORD: erpnext123
+      MYSQL_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
       MYSQL_DATABASE: erpnext
       MYSQL_USER: erpnext
-      MYSQL_PASSWORD: erpnext123
+      MYSQL_PASSWORD: ${MARIADB_ROOT_PASSWORD}
     volumes:
     - name: erpnext-db
       mountPath: /var/lib/mysql
