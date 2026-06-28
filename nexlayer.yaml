@@ -2,7 +2,7 @@ application:
   name: erpnext
   pods:
   - name: app
-    image: frappe/erpnext:latest
+    image: mirror.gcr.io/frappe/erpnext:latest
     path: /
     servicePorts:
     - 8000
@@ -15,7 +15,7 @@ application:
       REDIS_QUEUE: erpnext-redis-service:6379
       SOCKETIO_PORT: "9000"
   - name: mariadb
-    image: mariadb:10.6
+    image: mirror.gcr.io/library/mariadb:10.6
     servicePorts:
     - 3306
     vars:
@@ -28,6 +28,6 @@ application:
       mountPath: /var/lib/mysql
       size: 10Gi
   - name: redis
-    image: redis:7-alpine
+    image: mirror.gcr.io/library/redis:7-alpine
     servicePorts:
     - 6379
